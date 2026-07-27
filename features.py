@@ -402,4 +402,5 @@ def build_slope_variability_2000m(ctx) -> np.ndarray:
 RECIPES: list[dict[str, Any]] = [
     {"name": "slope_degrees", "build": build_slope_degrees},
     {"name": "northness", "build": build_northness},
+    {"name": "eastness", "build": build_eastness},
 ]
