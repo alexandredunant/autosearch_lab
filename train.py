@@ -59,7 +59,7 @@ from prepare import (
 # static names in artifacts/features/<process>/. An empty "include" list is
 # the null baseline: the model trains on a single constant feature.
 FEATURES = {
-    "include": ["slope_degrees", "northness", "eastness", "slope_variability_500m", "precipitation_sum_1d", "precipitation_sum_7d", "precipitation_sum_30d", "precipitation_sum_60d", "temperature_mean_1d", "temperature_mean_7d", "temperature_mean_60d", "lightning_sum_7d", "lightning_sum_30d", "precipitation_max", "precipitation_min", "precipitation_mean", "temperature_max", "temperature_std", "lightning_mean"],
+    "include": ["slope_degrees", "northness", "eastness", "slope_variability_500m", "slope_variability_1000m", "precipitation_sum_1d", "precipitation_sum_7d", "precipitation_sum_30d", "precipitation_sum_60d", "temperature_mean_1d", "temperature_mean_7d", "temperature_mean_60d", "lightning_sum_7d", "lightning_sum_30d", "precipitation_max", "precipitation_min", "precipitation_mean", "temperature_max", "temperature_std", "lightning_mean"],
     "exclude": [],
 }
 
@@ -92,9 +92,9 @@ MODEL_CONFIG = {
 }
 
 EXPERIMENT_RATIONALE = """
-Add 500-m local slope variability alongside the retained terrain orientation,
-slope, and dynamic climate terms. Terrain roughness may represent local relief
-and geomorphic complexity beyond a cell's direct steepness.
+Add 1-km local slope variability alongside the retained 500-m roughness and
+terrain-climate terms. A broader relief scale may capture hillslope context
+that the local roughness raster misses.
 """
 
 # ============================================================
