@@ -59,7 +59,7 @@ from prepare import (
 # static names in artifacts/features/<process>/. An empty "include" list is
 # the null baseline: the model trains on a single constant feature.
 FEATURES = {
-    "include": ["precipitation_sum_1d", "precipitation_sum_7d", "precipitation_sum_30d", "precipitation_sum_60d", "temperature_mean_1d", "temperature_mean_7d", "temperature_mean_60d", "lightning_sum_7d"],
+    "include": ["precipitation_sum_1d", "precipitation_sum_7d", "precipitation_sum_30d", "precipitation_sum_60d", "temperature_mean_1d", "temperature_mean_7d", "temperature_mean_60d", "lightning_sum_7d", "lightning_sum_30d"],
     "exclude": [],
 }
 
@@ -85,9 +85,9 @@ MODEL_CONFIG = {
 }
 
 EXPERIMENT_RATIONALE = """
-Add seven-day antecedent lightning density to the retained precipitation and
-temperature windows, testing whether a weekly convective-activity signal
-contributes beyond same-day weather predictors.
+Add thirty-day antecedent lightning density to the retained weekly lightning,
+precipitation, and temperature predictors, testing whether month-scale
+convective activity adds residual trigger information.
 """
 
 # ============================================================
