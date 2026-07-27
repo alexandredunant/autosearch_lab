@@ -59,7 +59,7 @@ from prepare import (
 # static names in artifacts/features/<process>/. An empty "include" list is
 # the null baseline: the model trains on a single constant feature.
 FEATURES = {
-    "include": ["precipitation_sum_1d", "precipitation_sum_7d", "precipitation_sum_30d", "precipitation_sum_60d", "temperature_mean_1d", "temperature_mean_7d", "temperature_mean_60d", "lightning_sum_7d", "lightning_sum_30d", "precipitation_max", "precipitation_min"],
+    "include": ["precipitation_sum_1d", "precipitation_sum_7d", "precipitation_sum_30d", "precipitation_sum_60d", "temperature_mean_1d", "temperature_mean_7d", "temperature_mean_60d", "lightning_sum_7d", "lightning_sum_30d", "precipitation_max", "precipitation_min", "precipitation_mean"],
     "exclude": [],
 }
 
@@ -76,6 +76,7 @@ FEATURES = {
 DERIVED: list[dict[str, Any]] = [
     {"var": "precipitation", "stat": "max"},
     {"var": "precipitation", "stat": "min"},
+    {"var": "precipitation", "stat": "mean"},
 ]
 
 # Starting configuration, not a tuned one. The feature phase leaves this fixed;
@@ -88,9 +89,9 @@ MODEL_CONFIG = {
 }
 
 EXPERIMENT_RATIONALE = """
-Add full-archive minimum precipitation beside the retained historical maximum,
-testing whether a location's dry-end climatology adds a complementary static
-susceptibility modifier alongside the date-linked trigger terms.
+Add full-archive precipitation mean beside the retained extrema, testing
+whether climatological wetness adds static susceptibility signal after both
+dry-end and extreme-rainfall regimes are already represented.
 """
 
 # ============================================================
