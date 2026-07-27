@@ -59,7 +59,7 @@ from prepare import (
 # static names in artifacts/features/<process>/. An empty "include" list is
 # the null baseline: the model trains on a single constant feature.
 FEATURES = {
-    "include": ["precipitation_sum_1d", "precipitation_sum_7d"],
+    "include": ["precipitation_sum_1d", "precipitation_sum_7d", "precipitation_sum_30d"],
     "exclude": [],
 }
 
@@ -85,9 +85,9 @@ MODEL_CONFIG = {
 }
 
 EXPERIMENT_RATIONALE = """
-Add the seven-day antecedent precipitation total to the retained one-day
-trigger feature. This tests whether accumulated wetness contributes beyond
-the immediate rainfall signal before any static predictor is considered.
+Add a 30-day antecedent precipitation total to the retained short-window
+rainfall signals, testing whether monthly antecedent wetness adds stable
+landslide discrimination before terrain or other static predictors.
 """
 
 # ============================================================
