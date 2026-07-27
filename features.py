@@ -425,6 +425,7 @@ RECIPES: list[dict[str, Any]] = [
     {"name": "slope_variability_1000m", "build": build_slope_variability_1000m},
     {"name": "slope_variability_2000m", "build": build_slope_variability_2000m},
     {"name": "plan_curvature", "build": build_plan_curvature},
+    {"name": "forest_cover", "build": build_forest_cover},
     {"name": "distance_to_buildings_m", "build": build_distance_to_buildings_m},
     {"name": "distance_to_electrical_infrastructure_m", "build": build_distance_to_electrical_infrastructure_m},
     {"name": "open_natural_cover", "build": build_open_natural_cover},
