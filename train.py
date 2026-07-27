@@ -59,7 +59,7 @@ from prepare import (
 # static names in artifacts/features/<process>/. An empty "include" list is
 # the null baseline: the model trains on a single constant feature.
 FEATURES = {
-    "include": ["precipitation_sum_1d", "precipitation_sum_7d", "precipitation_sum_30d", "precipitation_sum_60d", "temperature_mean_1d", "temperature_mean_7d", "temperature_mean_60d", "lightning_sum_7d", "lightning_sum_30d", "precipitation_max", "precipitation_min", "precipitation_mean", "temperature_max", "temperature_std"],
+    "include": ["precipitation_sum_1d", "precipitation_sum_7d", "precipitation_sum_30d", "precipitation_sum_60d", "temperature_mean_1d", "temperature_mean_7d", "temperature_mean_60d", "lightning_sum_7d", "lightning_sum_30d", "precipitation_max", "precipitation_min", "precipitation_mean", "temperature_max", "temperature_std", "lightning_mean"],
     "exclude": [],
 }
 
@@ -79,6 +79,7 @@ DERIVED: list[dict[str, Any]] = [
     {"var": "precipitation", "stat": "mean"},
     {"var": "temperature", "stat": "max"},
     {"var": "temperature", "stat": "std"},
+    {"var": "lightning", "stat": "mean"},
 ]
 
 # Starting configuration, not a tuned one. The feature phase leaves this fixed;
@@ -91,9 +92,9 @@ MODEL_CONFIG = {
 }
 
 EXPERIMENT_RATIONALE = """
-Add full-archive temperature variability beside the retained historical
-maximum, testing whether the long-run thermal range adds a static
-susceptibility modifier beyond antecedent temperature windows.
+Add full-archive mean lightning density to the retained climate and
+antecedent terms, testing whether average convective exposure adds static
+susceptibility signal beyond the retained short- and month-scale lightning totals.
 """
 
 # ============================================================
