@@ -59,7 +59,7 @@ from prepare import (
 # static names in artifacts/features/<process>/. An empty "include" list is
 # the null baseline: the model trains on a single constant feature.
 FEATURES = {
-    "include": ["precipitation_sum_1d", "precipitation_sum_7d", "precipitation_sum_30d", "precipitation_sum_60d"],
+    "include": ["precipitation_sum_1d", "precipitation_sum_7d", "precipitation_sum_30d", "precipitation_sum_60d", "temperature_mean_1d"],
     "exclude": [],
 }
 
@@ -85,9 +85,9 @@ MODEL_CONFIG = {
 }
 
 EXPERIMENT_RATIONALE = """
-Add a 60-day antecedent precipitation total to the retained short- and
-medium-window rainfall signals, testing whether seasonal preconditioning
-adds stable discrimination before terrain or static predictors.
+Add same-day antecedent temperature to the retained multi-window rainfall
+model. Temperature can regulate snowmelt and soil-water phase conditions,
+so this tests a complementary dynamic trigger before static features.
 """
 
 # ============================================================
