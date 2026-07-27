@@ -1,0 +1,16 @@
+run.log
+Modelfile.*
+/data/
+__pycache__/
+*.pyc
+.autoresearch_done
+artifacts/features/
+artifacts/derived/
+artifacts/features_cache/
+artifacts/features_scratch/
+artifacts/derived_scratch/
+artifacts/run_current/
+artifacts/run_best/
+artifacts/models/
+artifacts/maps/
+.claude/logs/
