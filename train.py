@@ -59,7 +59,7 @@ from prepare import (
 # static names in artifacts/features/<process>/. An empty "include" list is
 # the null baseline: the model trains on a single constant feature.
 FEATURES = {
-    "include": ["slope_degrees", "northness", "eastness", "slope_variability_500m", "slope_variability_1000m", "slope_variability_2000m", "distance_to_buildings_m", "distance_to_electrical_infrastructure_m", "open_natural_cover", "precipitation_sum_1d", "precipitation_sum_7d", "precipitation_sum_30d", "precipitation_sum_60d", "temperature_mean_1d", "temperature_mean_7d", "temperature_mean_60d", "lightning_sum_7d", "lightning_sum_30d", "precipitation_max", "precipitation_min", "precipitation_mean", "temperature_max", "temperature_std", "lightning_mean"],
+    "include": ["slope_degrees", "northness", "eastness", "slope_variability_500m", "slope_variability_1000m", "slope_variability_2000m", "distance_to_buildings_m", "distance_to_electrical_infrastructure_m", "open_natural_cover", "artificial_cover", "precipitation_sum_1d", "precipitation_sum_7d", "precipitation_sum_30d", "precipitation_sum_60d", "temperature_mean_1d", "temperature_mean_7d", "temperature_mean_60d", "lightning_sum_7d", "lightning_sum_30d", "precipitation_max", "precipitation_min", "precipitation_mean", "temperature_max", "temperature_std", "lightning_mean"],
     "exclude": [],
 }
 
@@ -92,9 +92,9 @@ MODEL_CONFIG = {
 }
 
 EXPERIMENT_RATIONALE = """
-Add binary open-natural cover beside retained terrain, infrastructure, and
-climate terms to test whether exposed grassland, shrubland, and sparse-cover
-conditions add residual susceptibility signal.
+Add binary artificial-surface cover beside retained terrain, infrastructure,
+open-natural cover, and climate terms to test whether developed and
+extractive land-use conditions add residual susceptibility signal.
 """
 
 # ============================================================
