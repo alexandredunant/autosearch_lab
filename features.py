@@ -399,6 +399,24 @@ def build_slope_variability_2000m(ctx) -> np.ndarray:
     return variability
 
 
+def build_plan_curvature(ctx) -> np.ndarray:
+    """Planform curvature from second DEM derivatives, with nodata propagated."""
+    import rasterio
+
+    with rasterio.open(ctx.dem_path) as src:
+        dem = src.read(1, masked=True).astype(np.float32).filled(np.nan)
+        transform = src.transform
+    cell_y, cell_x = abs(transform.e), abs(transform.a)
+    dz_dy, dz_dx = np.gradient(dem, cell_y, cell_x)
+    d2z_dyy, d2z_dyx = np.gradient(dz_dy, cell_y, cell_x)
+    d2z_dxy, d2z_dxx = np.gradient(dz_dx, cell_y, cell_x)
+    grad_sq = dz_dx * dz_dx + dz_dy * dz_dy
+    numerator = d2z_dxx * dz_dy * dz_dy - 2.0 * d2z_dxy * dz_dx * dz_dy + d2z_dyy * dz_dx * dz_dx
+    curvature = (numerator / np.maximum(grad_sq, 1e-12) ** 1.5).astype(np.float32)
+    curvature[~np.isfinite(dem)] = np.nan
+    return curvature
+
+
 RECIPES: list[dict[str, Any]] = [
     {"name": "slope_degrees", "build": build_slope_degrees},
     {"name": "northness", "build": build_northness},
@@ -406,6 +424,7 @@ RECIPES: list[dict[str, Any]] = [
     {"name": "slope_variability_500m", "build": build_slope_variability_500m},
     {"name": "slope_variability_1000m", "build": build_slope_variability_1000m},
     {"name": "slope_variability_2000m", "build": build_slope_variability_2000m},
+    {"name": "plan_curvature", "build": build_plan_curvature},
     {"name": "distance_to_buildings_m", "build": build_distance_to_buildings_m},
     {"name": "distance_to_electrical_infrastructure_m", "build": build_distance_to_electrical_infrastructure_m},
     {"name": "open_natural_cover", "build": build_open_natural_cover},
