@@ -59,7 +59,7 @@ from prepare import (
 # static names in artifacts/features/<process>/. An empty "include" list is
 # the null baseline: the model trains on a single constant feature.
 FEATURES = {
-    "include": ["precipitation_sum_1d", "precipitation_sum_7d", "precipitation_sum_30d", "precipitation_sum_60d", "temperature_mean_1d", "temperature_mean_7d", "temperature_mean_60d", "lightning_sum_7d", "lightning_sum_30d", "precipitation_max", "precipitation_min", "precipitation_mean", "temperature_max", "temperature_std", "lightning_mean"],
+    "include": ["slope_degrees", "precipitation_sum_1d", "precipitation_sum_7d", "precipitation_sum_30d", "precipitation_sum_60d", "temperature_mean_1d", "temperature_mean_7d", "temperature_mean_60d", "lightning_sum_7d", "lightning_sum_30d", "precipitation_max", "precipitation_min", "precipitation_mean", "temperature_max", "temperature_std", "lightning_mean"],
     "exclude": [],
 }
 
@@ -92,9 +92,9 @@ MODEL_CONFIG = {
 }
 
 EXPERIMENT_RATIONALE = """
-Add full-archive mean lightning density to the retained climate and
-antecedent terms, testing whether average convective exposure adds static
-susceptibility signal beyond the retained short- and month-scale lightning totals.
+Add a local terrain-slope raster to the retained dynamic climate and trigger
+terms. Elevation was unhelpful, but slope directly represents gravitational
+instability and is the first terrain-derived static candidate.
 """
 
 # ============================================================

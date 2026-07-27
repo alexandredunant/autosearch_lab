@@ -399,4 +399,6 @@ def build_slope_variability_2000m(ctx) -> np.ndarray:
     return variability
 
 
-RECIPES: list[dict[str, Any]] = []
+RECIPES: list[dict[str, Any]] = [
+    {"name": "slope_degrees", "build": build_slope_degrees},
+]
