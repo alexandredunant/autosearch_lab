@@ -405,4 +405,5 @@ RECIPES: list[dict[str, Any]] = [
     {"name": "eastness", "build": build_eastness},
     {"name": "slope_variability_500m", "build": build_slope_variability_500m},
     {"name": "slope_variability_1000m", "build": build_slope_variability_1000m},
+    {"name": "slope_variability_2000m", "build": build_slope_variability_2000m},
 ]
