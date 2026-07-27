@@ -59,7 +59,7 @@ from prepare import (
 # static names in artifacts/features/<process>/. An empty "include" list is
 # the null baseline: the model trains on a single constant feature.
 FEATURES = {
-    "include": ["precipitation_sum_1d", "precipitation_sum_7d", "precipitation_sum_30d", "precipitation_sum_60d", "temperature_mean_1d", "temperature_mean_7d", "temperature_mean_60d", "lightning_sum_7d", "lightning_sum_30d"],
+    "include": ["precipitation_sum_1d", "precipitation_sum_7d", "precipitation_sum_30d", "precipitation_sum_60d", "temperature_mean_1d", "temperature_mean_7d", "temperature_mean_60d", "lightning_sum_7d", "lightning_sum_30d", "precipitation_max"],
     "exclude": [],
 }
 
@@ -73,7 +73,7 @@ FEATURES = {
 # ships empty. This declarative form still exists for simple aggregates;
 # features.py's RECIPES generalize it to arbitrary raster-generation code —
 # prefer RECIPES for anything DERIVED's {var, stat, months} can't express.
-DERIVED: list[dict[str, Any]] = []
+DERIVED: list[dict[str, Any]] = [{"var": "precipitation", "stat": "max"}]
 
 # Starting configuration, not a tuned one. The feature phase leaves this fixed;
 # the hyperparameter phase is where it changes.
@@ -85,9 +85,9 @@ MODEL_CONFIG = {
 }
 
 EXPERIMENT_RATIONALE = """
-Add thirty-day antecedent lightning density to the retained weekly lightning,
-precipitation, and temperature predictors, testing whether month-scale
-convective activity adds residual trigger information.
+Add full-archive maximum precipitation to the retained antecedent trigger
+terms, testing whether a location's historical extreme rainfall regime adds
+static susceptibility information beyond the date-linked rainfall totals.
 """
 
 # ============================================================
