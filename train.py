@@ -59,7 +59,7 @@ from prepare import (
 # static names in artifacts/features/<process>/. An empty "include" list is
 # the null baseline: the model trains on a single constant feature.
 FEATURES = {
-    "include": [],
+    "include": ["precipitation_sum_1d"],
     "exclude": [],
 }
 
@@ -85,12 +85,10 @@ MODEL_CONFIG = {
 }
 
 EXPERIMENT_RATIONALE = """
-Null baseline: no features.py recipes, no static grids, no derived climate
-aggregates. Establishes the reference val_pr_auc that every later candidate
-is measured against (see program.md). Logged with --status baseline. This
-run also validates the new antecedent dynamic-archive features (see
-DATA.md) and the dynamic-before-static search-order rule (program.md) from
-a clean slate before the loop resumes.
+Test the one-day antecedent precipitation total before any static predictor,
+as required by the dynamic-first feature search order. Recent rainfall is a
+direct landslide trigger and this candidate gives its independent marginal
+spatial-fold contribution relative to the null model.
 """
 
 # ============================================================
