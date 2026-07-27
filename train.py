@@ -59,7 +59,7 @@ from prepare import (
 # static names in artifacts/features/<process>/. An empty "include" list is
 # the null baseline: the model trains on a single constant feature.
 FEATURES = {
-    "include": ["precipitation_sum_1d", "precipitation_sum_7d", "precipitation_sum_30d", "precipitation_sum_60d", "temperature_mean_1d", "temperature_mean_7d"],
+    "include": ["precipitation_sum_1d", "precipitation_sum_7d", "precipitation_sum_30d", "precipitation_sum_60d", "temperature_mean_1d", "temperature_mean_7d", "temperature_mean_60d"],
     "exclude": [],
 }
 
@@ -85,9 +85,9 @@ MODEL_CONFIG = {
 }
 
 EXPERIMENT_RATIONALE = """
-Add seven-day antecedent temperature to the retained same-day temperature
-and multi-window rainfall signals, testing whether a sustained thermal state
-adds information beyond the immediate snowmelt or phase-condition proxy.
+Add sixty-day antecedent temperature to the retained same-day and weekly
+temperature features plus multi-window rainfall, testing whether prolonged
+thermal preconditioning contributes beyond short-window phase conditions.
 """
 
 # ============================================================
