@@ -59,7 +59,7 @@ from prepare import (
 # static names in artifacts/features/<process>/. An empty "include" list is
 # the null baseline: the model trains on a single constant feature.
 FEATURES = {
-    "include": ["slope_degrees", "northness", "eastness", "slope_variability_500m", "slope_variability_1000m", "slope_variability_2000m", "precipitation_sum_1d", "precipitation_sum_7d", "precipitation_sum_30d", "precipitation_sum_60d", "temperature_mean_1d", "temperature_mean_7d", "temperature_mean_60d", "lightning_sum_7d", "lightning_sum_30d", "precipitation_max", "precipitation_min", "precipitation_mean", "temperature_max", "temperature_std", "lightning_mean"],
+    "include": ["slope_degrees", "northness", "eastness", "slope_variability_500m", "slope_variability_1000m", "slope_variability_2000m", "distance_to_buildings_m", "precipitation_sum_1d", "precipitation_sum_7d", "precipitation_sum_30d", "precipitation_sum_60d", "temperature_mean_1d", "temperature_mean_7d", "temperature_mean_60d", "lightning_sum_7d", "lightning_sum_30d", "precipitation_max", "precipitation_min", "precipitation_mean", "temperature_max", "temperature_std", "lightning_mean"],
     "exclude": [],
 }
 
@@ -92,9 +92,9 @@ MODEL_CONFIG = {
 }
 
 EXPERIMENT_RATIONALE = """
-Add 2-km slope variability alongside retained 500-m and 1-km roughness. This
-broader terrain-context scale tests whether regional relief adds beyond the
-already useful local and hillslope measures.
+Add distance to mapped buildings beside retained multi-scale terrain and
+climate terms to test whether settlement-adjacent disturbance adds residual
+susceptibility signal.
 """
 
 # ============================================================
