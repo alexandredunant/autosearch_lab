@@ -59,7 +59,7 @@ from prepare import (
 # static names in artifacts/features/<process>/. An empty "include" list is
 # the null baseline: the model trains on a single constant feature.
 FEATURES = {
-    "include": ["slope_degrees", "northness", "eastness", "slope_variability_500m", "slope_variability_1000m", "slope_variability_2000m", "distance_to_buildings_m", "distance_to_electrical_infrastructure_m", "open_natural_cover", "artificial_cover", "pasture_cover", "precipitation_sum_1d", "precipitation_sum_7d", "precipitation_sum_30d", "temperature_mean_1d", "temperature_mean_7d", "temperature_mean_60d", "lightning_sum_7d", "precipitation_max", "precipitation_mean", "temperature_max", "lightning_mean"],
+    "include": ["slope_degrees", "northness", "eastness", "slope_variability_500m", "slope_variability_1000m", "slope_variability_2000m", "distance_to_buildings_m", "distance_to_electrical_infrastructure_m", "open_natural_cover", "artificial_cover", "pasture_cover", "precipitation_sum_1d", "precipitation_sum_7d", "precipitation_sum_30d", "temperature_mean_1d", "temperature_mean_60d", "lightning_sum_7d", "precipitation_max", "precipitation_mean", "temperature_max", "lightning_mean"],
     "exclude": [],
 }
 
@@ -92,9 +92,9 @@ MODEL_CONFIG = {
 }
 
 EXPERIMENT_RATIONALE = """
-Remove retained precipitation_sum_60d from the reduced feature set, testing
-whether long-duration antecedent wetness remains useful after the shorter
-precipitation windows and retained rainfall climatology.
+Remove retained temperature_mean_7d from the reduced feature set, testing
+whether weekly thermal conditions remain useful after the same-day and
+long-duration temperature terms plus static climatology are retained.
 """
 
 # ============================================================
