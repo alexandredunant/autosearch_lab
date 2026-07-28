@@ -59,7 +59,7 @@ from prepare import (
 # static names in artifacts/features/<process>/. An empty "include" list is
 # the null baseline: the model trains on a single constant feature.
 FEATURES = {
-    "include": ["slope_degrees", "northness", "eastness", "slope_variability_500m", "slope_variability_1000m", "slope_variability_2000m", "plan_curvature", "forest_cover", "distance_to_buildings_m", "distance_to_electrical_infrastructure_m", "open_natural_cover", "artificial_cover", "pasture_cover", "precipitation_sum_1d", "precipitation_sum_7d", "precipitation_sum_30d", "temperature_mean_1d", "temperature_mean_60d", "lightning_sum_7d", "precipitation_max", "precipitation_mean", "temperature_max", "lightning_mean"],
+    "include": ["slope_degrees", "northness", "eastness", "slope_variability_500m", "slope_variability_2000m", "plan_curvature", "forest_cover", "distance_to_buildings_m", "distance_to_electrical_infrastructure_m", "open_natural_cover", "artificial_cover", "pasture_cover", "precipitation_sum_1d", "precipitation_sum_7d", "precipitation_sum_30d", "temperature_mean_1d", "temperature_mean_60d", "lightning_sum_7d", "precipitation_max", "precipitation_mean", "temperature_max", "lightning_mean"],
     "exclude": [],
 }
 
@@ -92,8 +92,8 @@ MODEL_CONFIG = {
 }
 
 EXPERIMENT_RATIONALE = """
-Add forest-cover context to the kept plan-curvature configuration; its earlier
-test predated both the reduced feature set and the newly retained terrain form.
+Re-test the intermediate 1-km slope-variability term, whose earlier ablation
+crashed before metrics, against the current retained terrain configuration.
 """
 
 # ============================================================
