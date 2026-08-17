@@ -59,7 +59,7 @@ from prepare import (
 # static names in artifacts/features/<process>/. An empty "include" list is
 # the null baseline: the model trains on a single constant feature.
 FEATURES = {
-    "include": ["slope_degrees", "northness", "eastness", "slope_variability_500m", "slope_variability_2000m", "plan_curvature", "forest_cover", "distance_to_buildings_m", "distance_to_electrical_infrastructure_m", "open_natural_cover", "artificial_cover", "pasture_cover", "precipitation_sum_1d", "precipitation_sum_7d", "precipitation_sum_30d", "temperature_mean_1d", "temperature_mean_60d", "lightning_sum_7d", "precipitation_max", "precipitation_mean", "temperature_max", "lightning_mean"],
+    "include": ["slope_degrees", "northness", "eastness", "slope_variability_500m", "slope_variability_2000m", "plan_curvature", "forest_cover", "distance_to_buildings_m", "distance_to_electrical_infrastructure_m", "open_natural_cover", "artificial_cover", "pasture_cover", "precipitation_sum_1d", "precipitation_sum_7d", "precipitation_sum_30d", "temperature_mean_1d", "temperature_mean_60d", "lightning_sum_7d", "precipitation_max", "precipitation_mean", "temperature_max", "temperature_max_m9-10-11", "lightning_mean"],
     "exclude": [],
 }
 
@@ -78,6 +78,7 @@ DERIVED: list[dict[str, Any]] = [
     {"var": "precipitation", "stat": "min"},
     {"var": "precipitation", "stat": "mean"},
     {"var": "temperature", "stat": "max"},
+    {"var": "temperature", "stat": "max", "months": [9, 10, 11]},
     {"var": "temperature", "stat": "std"},
     {"var": "lightning", "stat": "mean"},
 ]
@@ -92,8 +93,8 @@ MODEL_CONFIG = {
 }
 
 EXPERIMENT_RATIONALE = """
-Re-test the intermediate 1-km slope-variability term, whose earlier ablation
-crashed before metrics, against the current retained terrain configuration.
+Add the autumn (September--November) temperature-maximum climatology to test
+whether shoulder-season thermal exposure adds residual susceptibility signal.
 """
 
 # ============================================================
