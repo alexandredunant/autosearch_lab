@@ -1,4 +1,4 @@
-# Data
+# Archived data notes
 
 The input data lives in the repo's `data/` directory (kept out of git by
 `.gitignore` — the dynamic archives alone are ~4.4 GB). This copy is

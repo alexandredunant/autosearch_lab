@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Archived workflow; use ../features.py for new studies.
 """THE feature-engineering file. This and train.py are the only files the
 autoresearch agent edits.
 

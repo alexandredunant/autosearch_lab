@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Archived workflow.
 """Manual, post-loop reporting: susceptibility maps + the search-progress plot.
 
 Not part of the fixed-infra "never edit" contract in program.md — this is a

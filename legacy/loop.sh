@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Historical reference only. Contains unsafe agent flags; do not execute.
 # Autoresearch driver. Each iteration launches a FRESH agent session that runs
 # exactly one experiment (see program.md). State lives in git + the ledger, so
 # no chat context accumulates across experiments.

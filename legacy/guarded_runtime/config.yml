@@ -1,0 +1,45 @@
+# One study = one process + one sampling design. Changing anything here starts a new study.
+project:
+  process: landslide             # landslide | debris_flow | rockfall (one model each)
+  dem: data/grids/dem.tif        # projected CRS in metres; the reference grid
+  events: data/points_landslide.geojson   # dated points of THIS process only
+  date_column: date
+  seed: 42
+
+# Non-events after Moreno et al. (2025, JGR-ES) and Steger et al. (2026, NHESS); see prepare.py.
+sampling:
+  background_ratio: 5            # non-events per event before the wet-day rule (Moreno: 20)
+  event_buffer_m: 150            # Moreno et al.: 150 m from any known event
+  start_date: null               # null: period of the dated inventory
+  end_date: null
+  surveyed_mask: null            # raster, 1 = effectively surveyed area (strongly recommended)
+  terrain_mask: null             # raster, 1 = relevant terrain for this process (e.g. GPP area)
+  exclude_raster: data/vectors/CorineLandCover_polygon.tif
+  exclude_crs: EPSG:25832        # this file lacks complete CRS metadata
+  exclude_classes: [511, 512, 335]   # water bodies, glaciers
+  # Daily-data adaptation for BOTH classes (>= threshold); not the paper's hourly filter.
+  # Steger: >= 10 mm on the day or the day before -> {variable: precipitation, days: 2, lag: 0, stat: max, threshold: 10}
+  wet_days: null                 # all recorded events; optional daily approximation:
+  # wet_days: {variable: precipitation, days: 3, lag: 1, stat: sum, threshold: 1}
+
+dynamic:
+  max_history_days: 60           # every point has this many complete days before its date
+  same_day: false                # true allows predictors using the event day itself (Steger)
+  sources:                       # daily NetCDF (time, y, x); {} for a static-only study
+    precipitation: {glob: data/dynamic/precipitation/*.nc, variable: precipitation, crs: EPSG:32632}
+    temperature: {glob: data/dynamic/temperature/*.nc, variable: temperature, crs: EPSG:32632}
+
+evaluation:
+  block_size_m: 10000            # spatial CV blocks
+  folds: 5
+  holdout_fraction: 0.2          # reserved for the human-only prepare.py --holdout
+
+limits:                          # shared by preparation, features, dynamic processing and training
+  disk_gb: 40                    # total size of artifacts/ (everything generated)
+  job_gb: 4                     # reserved before every job; includes scratch and logs
+  file_gb: 1
+  memory_gb: 6
+  cpus: 2
+  job_timeout_s: 900
+  max_cells: 2000000             # DEM size sanity check before full-grid arrays
+  max_samples: 100000            # bounds sample tables and point-history allocations

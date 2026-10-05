@@ -1,26 +1,12 @@
-# Core
-numpy
-pandas
-scipy
-scikit-learn
-PyYAML
-
-# Model + interpretability
-interpret
-t2ebm
-
-# Geospatial (points + grids)
-geopandas
-rasterio
-
-# Dynamic (time-varying) predictors: NetCDF lag cubes
-xarray
-netCDF4
-
-# Progress figure
-matplotlib
-
-# GDAL CLI tools (gdaldem, gdal_proximity.py, gdalwarp, gdal_rasterize, ...)
-# are an external system dependency invoked via subprocess from features.py
-# recipes (see prepare.FeatureContext.run) — not a pip package. They must be
-# on PATH (already true in the conda env this repo was set up in).
+numpy>=1.24,<3
+pandas>=2,<3
+scipy>=1.10,<2
+scikit-learn>=1.4,<2
+PyYAML>=6,<7
+geopandas>=0.14,<2
+rasterio>=1.3,<2
+xarray>=2024.1
+netCDF4>=1.6,<2
+interpret>=0.6,<0.8
+t2ebm>=0.1.2  # TalkToEBM: EBM shape functions as text (offline; LLM summary optional)
+# System dependency: SAGA GIS (saga_cmd), tested with 9.12.6. install.sh checks it.

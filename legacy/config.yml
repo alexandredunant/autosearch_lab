@@ -1,0 +1,33 @@
+project:
+  processes: [landslide]
+
+sampling:
+  background_ratio: 5    # background points per presence
+  event_buffer_m: 150    # how far a background point must sit from any event
+  k_folds: 5             # spatial K-fold blocks (the fixed evaluation protocol)
+  # Antecedent dynamic-archive features (build_antecedent_features()): sum and
+  # mean of each dynamic variable over the N most recent days up to and
+  # including each observation's own date. Background points get a pseudo-date
+  # resampled from real event dates (assign_absence_dates()), rejected and
+  # redrawn if within antecedent_buffer_days of a real event within
+  # antecedent_buffer_radius_m -- avoids labeling "regional wet conditions that
+  # also triggered a nearby real event" as a clean negative.
+  antecedent_windows_days: [1, 7, 30, 60]
+  antecedent_buffer_days: 730   # 2 years
+  antecedent_buffer_radius_m: 2000
+  # Judged ONCE per hazard branch during setup (program.md's Setup section),
+  # then frozen — the per-experiment loop never touches this again. exclude_raster
+  # is whichever categorical raster the agent chose from --describe-primitives's
+  # inventory (here: Corine Land Cover; could equally be geology, demographic
+  # zoning, etc. on another branch); exclude_classes are the codes to exclude
+  # from non-event (background) sampling. See
+  # `python prepare.py --describe-raster-classes --source <path>`, then `--build-exclude-mask`.
+  exclude_raster: vectors/CorineLandCover_polygon.tif
+  exclude_classes: [511, 512, 335]
+
+search:
+  phase_feature: 50      # change ONLY the feature space until 50 consecutive discards
+  phase_hyper: 60        # then hyperparameters
+  phase_cluster: 70      # then spatial/temporal clustering-derived features (see program.md)
+  discard_budget: 80     # stop after 80 consecutive discards
+  feature_build_timeout_s: 900  # wall-clock budget per features.py recipe build

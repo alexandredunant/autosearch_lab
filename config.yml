@@ -1,33 +1,31 @@
-project:
-  processes: [landslide]
+# Study design. Human-owned: the agent never edits this file.
+# Changing data/ or sampling/ means a new study: rerun `python prepare.py --force`.
+# Static susceptibility (one map). Spatial sampling after Moreno et al. (2025, JGR-ES,
+# doi:10.1029/2024JF008219) and Moreno et al. (2024, STOTEN 912:169166).
+
+data:
+  dem: data/grids/dem.tif                  # reference grid: projected CRS in metres; map resolution
+  events: data/points_landslide.geojson    # ALL recorded events of one process (dates not needed)
+  landcover:                               # Corine Land Cover level-3 codes: the standard mask
+    path: data/vectors/CorineLandCover_polygon.tif
+    crs: EPSG:25832                        # this file lacks complete CRS metadata
 
 sampling:
-  background_ratio: 5    # background points per presence
-  event_buffer_m: 150    # how far a background point must sit from any event
-  k_folds: 5             # spatial K-fold blocks (the fixed evaluation protocol)
-  # Antecedent dynamic-archive features (build_antecedent_features()): sum and
-  # mean of each dynamic variable over the N most recent days up to and
-  # including each observation's own date. Background points get a pseudo-date
-  # resampled from real event dates (assign_absence_dates()), rejected and
-  # redrawn if within antecedent_buffer_days of a real event within
-  # antecedent_buffer_radius_m -- avoids labeling "regional wet conditions that
-  # also triggered a nearby real event" as a clean negative.
-  antecedent_windows_days: [1, 7, 30, 60]
-  antecedent_buffer_days: 730   # 2 years
-  antecedent_buffer_radius_m: 2000
-  # Judged ONCE per hazard branch during setup (program.md's Setup section),
-  # then frozen — the per-experiment loop never touches this again. exclude_raster
-  # is whichever categorical raster the agent chose from --describe-primitives's
-  # inventory (here: Corine Land Cover; could equally be geology, demographic
-  # zoning, etc. on another branch); exclude_classes are the codes to exclude
-  # from non-event (background) sampling. See
-  # `python prepare.py --describe-raster-classes --source <path>`, then `--build-exclude-mask`.
-  exclude_raster: vectors/CorineLandCover_polygon.tif
-  exclude_classes: [511, 512, 335]
+  seed: 42
+  # Trivial terrain removed for BOTH classes and from the map (Moreno 2025: rock faces,
+  # glaciers, water bodies). CLC 332 bare rocks, 335 glaciers/perpetual snow,
+  # 511 water courses, 512 water bodies.
+  mask_landcover: [332, 335, 511, 512]
+  flat_slope_deg: null         # optional extra rule: cells flatter than this are trivial (paper: "flat lands")
+  survey_mask: null            # optional raster, 1 = effectively surveyed area (Moreno 2025 ESA)
+  absence_ratio: 10            # absences per presence cell (JGR-ES final sample ~1:10)
+  buffer_m: 150                # no absence within 150 m of any inventoried event (JGR-ES)
 
-search:
-  phase_feature: 50      # change ONLY the feature space until 50 consecutive discards
-  phase_hyper: 60        # then hyperparameters
-  phase_cluster: 70      # then spatial/temporal clustering-derived features (see program.md)
-  discard_budget: 80     # stop after 80 consecutive discards
-  feature_build_timeout_s: 900  # wall-clock budget per features.py recipe build
+evaluation:
+  folds: 10                    # k-means spatial CV on coordinates (sperrorest partition_kmeans)
+
+limits:
+  artifacts_gb: 40             # everything generated (artifacts/) must stay below this
+  file_gb: 2                   # largest single file a SAGA command may write
+  saga_timeout_s: 900          # per SAGA command
+  cpus: 4                      # saga_cmd --cores and model n_jobs
