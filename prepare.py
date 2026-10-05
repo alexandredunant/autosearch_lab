@@ -27,7 +27,9 @@ import importlib.util
 import json
 import os
 import re
+import resource
 import shutil
+import signal
 import subprocess
 import sys
 import time
@@ -52,6 +54,15 @@ CFG = yaml.safe_load((ROOT / "config.yml").read_text())
 LIMITS, SAMPLING = CFG["limits"], CFG["sampling"]
 SEED, CPUS = int(SAMPLING["seed"]), int(LIMITS["cpus"])
 DEM = ROOT / CFG["data"]["dem"]
+
+# Long computations are fine, within limits. Any process importing this module (train.py,
+# tmp/ scripts) ends after limits.timeout_min (default SIGALRM action, even in native code)
+# and gets MemoryError beyond limits.memory_gb of allocated data (RLIMIT_DATA, Linux >= 4.7).
+signal.alarm(max(1, int(LIMITS["timeout_min"] * 60)))
+_hard = resource.getrlimit(resource.RLIMIT_DATA)[1]
+_cap = int(LIMITS["memory_gb"] * 1e9)
+_cap = _cap if _hard == resource.RLIM_INFINITY else min(_cap, _hard)
+resource.setrlimit(resource.RLIMIT_DATA, (_cap, _cap))
 
 # Python's GDAL skips conda plugins that clash with pip rasterio (saga_cmd is unaffected).
 os.environ["GDAL_DRIVER_PATH"] = "disable"
@@ -241,9 +252,16 @@ def explain(ebm) -> str:
             parts += [f"## {name}", "", "Pairwise interaction: see the model JSON for its score table.", ""]
             continue
         graph, precision = extract_graph(ebm, i), None
+        if np.ptp(graph.scores) == 0:  # t2ebm 0.1.2 loops forever on flat graphs
+            parts += [f"## {name}", "", "Flat shape function: no effect on the prediction.", ""]
+            continue
         if graph.feature_type == "continuous":
             graph, precision = simplify_graph(graph, min_variation_per_cent=0.05), 3
-        parts += [f"## {name}", "", graph_to_text(graph, x_axis_precision=precision, max_tokens=1500), ""]
+        try:
+            text = graph_to_text(graph, x_axis_precision=precision, max_tokens=1500)
+        except Exception as e:  # noqa: BLE001  t2ebm raises bare Exception for oversized graphs
+            text = f"Not rendered as text ({e}); see the model JSON."
+        parts += [f"## {name}", "", text, ""]
     if os.environ.get("T2EBM_LLM") and not placeholder:
         parts += ["## LLM summary", "", t2ebm.describe_ebm(os.environ["T2EBM_LLM"], ebm)]
     return "\n".join(parts) + "\n"

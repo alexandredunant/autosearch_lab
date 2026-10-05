@@ -9,4 +9,5 @@ xarray>=2024.1
 netCDF4>=1.6,<2
 interpret>=0.6,<0.8
 t2ebm>=0.1.2  # TalkToEBM: EBM shape functions as text (offline; LLM summary optional)
+pytest>=8  # python -m pytest tests
 # System dependency: SAGA GIS (saga_cmd), tested with 9.12.6. install.sh checks it.

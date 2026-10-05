@@ -48,6 +48,22 @@ Inputs in `data/`:
 | `dynamic/{precipitation,temperature}/*.nc` | Daily 1980–2023, 250 m, own extent (variable `DATE`) |
 | `dynamic/lightning/*.nc` | Daily flash density 2012–2024, DEM extent |
 
+**Dynamic data.** The map is static, so a NetCDF archive enters as a map: a climatology, an
+extreme or threshold index, seasonality or variability. Points have no dates, and any feature
+built from event dates leaks the inventory. Measured costs on this machine:
+
+- **Streaming.** One monthly precipitation or temperature file decompresses to about 50 MB
+  in about 0.2 s. A full 1980–2023 pass with rolling windows takes about 2 minutes, at about
+  1 GB of memory.
+- **Whole series.** Keeping the whole daily series of every DEM-extent cell, for example for
+  per-pixel percentiles, takes about 16 GB and 4 minutes. That is one variable at a time and
+  float32 only; two variables at once exceed the memory limit.
+- **Layout.** Each day is stored as one compressed full-grid chunk. Reading a spatial tile
+  still decompresses whole days, so processing tile by tile re-reads the archive per tile.
+
+Stream month by month and carry rolling-window state across files. Estimate the cost first
+(files × 0.2 s per pass). Save the result once as a feature, so later experiments reuse it.
+
 The model must stay glass-box. The baseline is an Explainable Boosting Machine; additive
 terms with a few pairwise interactions are fine. The human must be able to read every
 shape function behind the final map.
@@ -62,16 +78,17 @@ this template:
 # artifacts/features/slope/recipe.sh: run from the repository root
 set -euo pipefail
 ulimit -f 2000000                           # no file above ~2 GB (limits.file_gb)
+ulimit -d 20000000                          # no process above ~20 GB of data (limits.memory_gb)
 unset GDAL_DRIVER_PATH GDAL_DATA PROJ_DATA  # system SAGA must not load conda's GDAL plugins
 mkdir -p artifacts/features/slope
-timeout 900 saga_cmd --cores=4 ta_morphometry 0 -ELEVATION data/grids/dem.tif -SLOPE artifacts/features/slope/slope.sdat -UNIT_SLOPE 1
+timeout 30m saga_cmd --cores=4 ta_morphometry 0 -ELEVATION data/grids/dem.tif -SLOPE artifacts/features/slope/slope.sdat -UNIT_SLOPE 1
 ```
 
 Vector distances: rasterize onto the DEM grid, then compute proximity:
 
 ```bash
-timeout 900 saga_cmd --cores=4 grid_gridding 0 -INPUT data/vectors/roads.gpkg -OUTPUT 0 -TARGET_DEFINITION 1 -TARGET_TEMPLATE data/grids/dem.tif -GRID tmp/roads.sdat
-timeout 900 saga_cmd --cores=4 grid_tools 26 -FEATURES tmp/roads.sdat -DISTANCE artifacts/features/dist_roads/dist.sdat
+timeout 30m saga_cmd --cores=4 grid_gridding 0 -INPUT data/vectors/roads.gpkg -OUTPUT 0 -TARGET_DEFINITION 1 -TARGET_TEMPLATE data/grids/dem.tif -GRID tmp/roads.sdat
+timeout 30m saga_cmd --cores=4 grid_tools 26 -FEATURES tmp/roads.sdat -DISTANCE artifacts/features/dist_roads/dist.sdat
 ```
 
 Find tools yourself: `saga_cmd ta_morphometry` lists a library's tools, and
@@ -106,8 +123,15 @@ These limits are hard. A violation ends the run.
   reductions or fine grids. Above 80 %, run `python prepare.py prune`, which deletes feature
   directories no kept run uses, and empty `tmp/`. Use `rm` only inside `tmp/` and
   `artifacts/features/`.
-- **Time.** Wrap every `saga_cmd` in `timeout 900`. Run experiments under `timeout 30m`.
-  Use at most `limits.cpus` cores, which is 4.
+- **Time.** Long computations are normal, such as NetCDF statistics or big EBMs, but nothing may
+  run longer than `limits.timeout_min`, which is 30 minutes. Wrap `saga_cmd`, recipe scripts
+  and training runs in `timeout 30m`. Any Python process that imports `prepare` is also killed
+  after 30 minutes. If your harness caps a command's duration (Claude Code: 10 minutes in the
+  foreground), start long jobs in the background and wait for them to finish. A command your
+  harness cut short is not a crash of the idea. Use at most `limits.cpus` cores, which is 4.
+- **Memory.** No process may allocate more than `limits.memory_gb`, which is 20 GB of a
+  31 GB machine. Keep `ulimit -d` in every recipe. Python processes that import `prepare` get
+  `MemoryError` beyond it. A recipe that hits the limit must stream, not ask for more.
 - **Nothing outside the box.** No network access, no package installs, no `sudo`, no
   background processes, and one experiment at a time.
 
@@ -120,7 +144,7 @@ LOOP FOREVER:
    untried idea that these support. An identical experiment is refused automatically.
 2. Make any new feature with a `tmp/` script, and save its recipe. Edit `train.py`, then
    `git commit -am "<idea>"`.
-3. Run `timeout 30m python train.py > run.log 2>&1`.
+3. Run `timeout 30m python train.py > run.log 2>&1`, in the background if it may be long.
 4. Run `grep "^val_auroc:\|^best_kept" run.log`. If it prints nothing, read `tail -n 50 run.log`.
    Fix trivial mistakes and rerun. Otherwise log a crash.
 5. Log with `python prepare.py log <keep|discard|crash> "<what changed; result; why; next>"`.

@@ -18,6 +18,7 @@ Boosting Machine, and the human gets one interpretable map at the end.
 bash install.sh                 # Python env, SAGA check, builds artifacts/prepared/
 source .venv/bin/activate
 python train.py                 # baseline: elevation + Corine land cover
+python -m pytest tests          # 13 tests, ~75 s (real-data test needs data/ and saga_cmd)
 ```
 
 Then start the agent in this directory, e.g. with Claude Code on a mid-size model:
@@ -76,7 +77,12 @@ presumed absences in the Corine domain), not calibrated event probabilities.
 ## Limits
 
 `config.yml: limits` sets a 40 GB budget for `artifacts/` + `tmp/`, enforced by
-`evaluate()`, and recipes cap single files with `ulimit -f` and SAGA calls with `timeout`.
+`evaluate()`, and recipes cap single files with `ulimit -f`. Every recipe, SAGA call and run
+may take up to `limits.timeout_min` (30 minutes) and `limits.memory_gb` (20 GB): `timeout`
+and `ulimit -d` in program.md's recipe template, plus an alarm and a data-segment limit that
+apply to any Python process importing `prepare.py`. These limits come from measured costs:
+the heaviest training run (60 features with interactions) takes about 15 minutes, a full
+NetCDF pass about 2 minutes, and a full daily series of one variable about 16 GB.
 `python prepare.py usage` shows usage, `python prepare.py prune` deletes feature
 directories no kept run uses. These are guardrails for a cooperative agent, not a
 sandbox: run it under an account that cannot modify `data/`.

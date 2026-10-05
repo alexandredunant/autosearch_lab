@@ -14,6 +14,11 @@ else
   "python$PYTHON_VERSION" -m venv .venv || python3 -m venv .venv
   .venv/bin/python -m pip install -r requirements.txt
 fi
+# A conda base/env exports GDAL/PROJ paths that break pip rasterio and the system SAGA.
+grep -q "autosearch_lab: clear conda" .venv/bin/activate || cat >> .venv/bin/activate <<'ACT'
+# autosearch_lab: clear conda GDAL/PROJ paths (pip rasterio and system SAGA bring their own)
+unset GDAL_DRIVER_PATH GDAL_DATA PROJ_DATA PROJ_LIB
+ACT
 .venv/bin/python -c 'import sys; assert sys.version_info >= (3, 10), "Python 3.10+ required"
 import numpy, pandas, scipy, sklearn, yaml, geopandas, rasterio, xarray, netCDF4, interpret
 print("Python", sys.version.split()[0], "packages OK")'

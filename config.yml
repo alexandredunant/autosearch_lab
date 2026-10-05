@@ -27,5 +27,6 @@ evaluation:
 limits:
   artifacts_gb: 40             # everything generated (artifacts/) must stay below this
   file_gb: 2                   # largest single file a SAGA command may write
-  saga_timeout_s: 900          # per SAGA command
+  timeout_min: 30              # wall clock per recipe script, SAGA call or training run (measured worst ~15)
+  memory_gb: 20                # per process (data segment); one full daily series is ~16 GB
   cpus: 4                      # saga_cmd --cores and model n_jobs
